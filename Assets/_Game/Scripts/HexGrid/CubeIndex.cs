@@ -40,6 +40,16 @@ namespace Axie
         {
             return one.Radius() < two.Radius();
         }
+        
+        public static bool operator >= (CubeIndex one, CubeIndex two)
+        {
+            return one.Radius() >= two.Radius();
+        }
+
+        public static bool operator <=(CubeIndex one, CubeIndex two)
+        {
+            return one.Radius() <= two.Radius();
+        }
 
         public int Radius()
         {

@@ -1,6 +1,7 @@
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace Axie
@@ -64,6 +65,8 @@ namespace Axie
         public void OnClickRestart()
         {
             Hide();
+            Time.timeScale = 1f;
+            SceneManager.LoadSceneAsync(Constants.Scene.SPLASH);
         }
     }
 }

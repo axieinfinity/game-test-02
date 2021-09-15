@@ -45,17 +45,36 @@ namespace Axie
                 {
                     SetupAxie(AxieType.Attacker, radius + i + 2);    
                 }
-                powerBar.UpdateBar(attackers, defenders);
-                
+
                 radius += 1;
                 var mapHeight = grid.GetMapHeight();
                 cameraMovement.UpdateBound(mapHeight);
                 miniMapCam.orthographicSize = mapHeight + 3;
+                
+                UpdateAttackersAndDefenders();
                 yield return wait;
                 yield return wait;
             }
             
+            Debug.LogError($"Total : {attackers.Count + defenders.Count}");
             Debug.LogError($"Total Axies: {grid.Tiles.Count(x => x.Value.IsEmpty == false)}");
+        }
+
+        private void UpdateAttackersAndDefenders()
+        {
+            attackers.Clear();
+            defenders.Clear();
+            foreach (var tile in grid.Tiles.Values)
+            {
+                if (tile.Axie != null)
+                {
+                    if (tile.Axie.AxieType == AxieType.Attacker)
+                        attackers.Add(tile.Axie);
+                    else
+                        defenders.Add(tile.Axie);
+                }
+            }
+            powerBar.UpdateBar(attackers, defenders);
         }
 
         void SetupAxie(AxieType axieType, int bound)
@@ -64,10 +83,6 @@ namespace Axie
             foreach (var tile in tiles)
             {
                 tile.SetAxie(axieType);
-                if (axieType == AxieType.Attacker)
-                    attackers.Add(tile.Axie);
-                else
-                    defenders.Add(tile.Axie);
             }
         }
 
@@ -75,15 +90,7 @@ namespace Axie
         {
             var tiles = grid.TilesInBound(0, 0, 0, bound);
             foreach (var tile in tiles)
-            {
-                if (tile.IsEmpty == false)
-                {
-                    if (tile.AxieType == AxieType.Attacker)
-                        attackers.Remove(tile.Axie);
-                    else
-                        defenders.Remove(tile.Axie);    
-                }
-                
+            { 
                 tile.ClearAxie();
             }
         }
@@ -92,7 +99,11 @@ namespace Axie
         
         private IEnumerator Start()
         {
+            yield return new WaitForSeconds(1f);
+            MessageUI.Instance.Show("Generating Largest Map ...", 10);
+            yield return new WaitForSeconds(1f);
             yield return InitGrid();
+            MessageUI.Instance.Show($"Generate Map Completed! Total Axies: {attackers.Count + defenders.Count}", 5);
             yield return GameLoop();
         }
 
@@ -140,7 +151,7 @@ namespace Axie
             foreach (var tile in emptyTiles)
             {
                 var attackerNeighbours = grid.Neighbours(tile)
-                    .Where(x => x.IsEmpty == false && x.AxieType == AxieType.Attacker && x.Index > tile.Index && !dictAttackers.ContainsKey(x.Index.ToString())).ToList();
+                    .Where(x => x.IsEmpty == false && x.AxieType == AxieType.Attacker && x.Index >= tile.Index && !dictAttackers.ContainsKey(x.Index.ToString())).ToList();
                 if (attackerNeighbours.Count > 0)
                 {
                     var rand = UnityEngine.Random.Range(0, attackerNeighbours.Count);
