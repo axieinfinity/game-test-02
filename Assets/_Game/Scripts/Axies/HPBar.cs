@@ -6,6 +6,9 @@ namespace Axie
     public class HPBar : MonoBehaviour
     {
         [SerializeField] private Transform scaler;
+        [SerializeField] private SpriteRenderer hpRenderer;
+        [SerializeField] private Color normalHPColor;
+        [SerializeField] private Color lowHPColor;
 
         private int maxHP;
         private int currentHP;
@@ -18,7 +21,9 @@ namespace Axie
 
         public void UpdateHP(int currentHP)
         {
-            scaler.DOScaleX((float)currentHP / maxHP, 0.3f);
+            var ratio = (float)currentHP / maxHP; 
+            scaler.DOScaleX(ratio, 0.3f);
+            hpRenderer.color = ratio > 0.2f ? normalHPColor : lowHPColor;
         }
     }
 }

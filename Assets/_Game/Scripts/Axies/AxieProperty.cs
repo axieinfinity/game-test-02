@@ -1,3 +1,4 @@
+using Spine.Unity;
 using UnityEngine;
 
 namespace Axie
@@ -7,5 +8,6 @@ namespace Axie
     {
         public AxieType AxieType;
         public int StartingHP;
+        public SkeletonDataAsset SkeletonDataAsset;
     }
 }

@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AxieType: 1
   StartingHP: 30
+  SkeletonDataAsset: {fileID: 11400000, guid: 6b093778741c44b6fabae731a05db14e, type: 2}

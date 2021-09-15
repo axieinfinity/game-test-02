@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using DG.Tweening;
+using Spine.Unity.Modules;
 using Spine.Unity.Playables;
 using UnityEngine;
 using Utils;
@@ -21,14 +22,18 @@ namespace Axie
         [SerializeField] private HPBar hpBar;
         [SerializeField] private SkeletonAnimationStateHandler animationHandler;
         [SerializeField] private Collider2D collider;
+        [SerializeField] private SkeletonRendererCustomMaterials customMaterial;
+        public CubeIndex CubeIndex;
         #endregion
 
         public event Action OnDead;
-        public int RandomNumber { get; set; }
         
         #region Properties
         public AxieType AxieType => property.AxieType;
         public int HP { get; set; }
+        public int TotalDamage { get; set; }
+        public int RandomNumber { get; set; }
+        public AxieProperty AxieProperty => property;
         #endregion
 
         private void OnEnable()
@@ -106,7 +111,9 @@ namespace Axie
             
             attackSeq.AppendCallback(() =>
             {
-                other.TakeDame(GetDamageGiven(other));
+                var damageGiven = GetDamageGiven(other);
+                TotalDamage += damageGiven;
+                other.TakeDame(damageGiven);
             });
             
             if (AxieType == AxieType.Attacker)
@@ -142,9 +149,20 @@ namespace Axie
             return GeometryUtility.TestPlanesAABB(plans, collider.bounds);
         }
 
+        private void OnMouseDown()
+        {
+            // Debug.LogError($"HP: {HP}/{property.StartingHP} - Damage: {Damage}");
+            UIController.Instance.ShowAxieInfo(this);
+        }
+
         public void Update()
         {
             SetSkeletonEnable(IsVisible());
+        }
+
+        public void SetCustomMaterialActive(bool value)
+        {
+            customMaterial.enabled = value;
         }
     }
 }

@@ -58,7 +58,6 @@ namespace Axie
 
         private void Zoom(float scroll)
         {
-            Debug.LogError("ZOOM");
             // Get MouseWheel-Value and calculate new Orthographic-Size
             // (while using Zoom-Speed-Multiplier)
             float mouseScrollWheel = scroll * zoomSpeed;

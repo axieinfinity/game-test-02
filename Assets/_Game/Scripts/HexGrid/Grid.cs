@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using Random = System.Random;
 
@@ -183,6 +184,8 @@ namespace Axie
 
 					tile = CreateHexGO(pos, ("Hex[" + q + "," + r + "," + (-q - r).ToString() + "]"));
 					tile.Index = new CubeIndex(q, r, -q - r);
+					tile.transform.localScale = Vector3.zero;
+					tile.transform.DOScale(1f, 0.3f);
 					grid.Add(tile.Index.ToString(), tile);
 				}
 			}
@@ -198,7 +201,7 @@ namespace Axie
 			return (float)((mapSize - 1) * Math.Sqrt(3) * hexRadius);
 		}
 
-	private Tile CreateHexGO(Vector3 postion, string name)
+		private Tile CreateHexGO(Vector3 postion, string name)
 		{
 			// var go = new GameObject(name, typeof(Tile));
 			var tile = Instantiate(tilePrefab, postion, Quaternion.identity, transform);

@@ -33,6 +33,7 @@ namespace Axie
 			else
 				Axie.SetFlip(transform.position.x > 0);
 			Axie.AppearAnim();
+			Axie.CubeIndex = Index;
 			Axie.OnDead += OnAxieDead;
 		}
 
@@ -43,6 +44,7 @@ namespace Axie
 			Axie.transform.SetParent(axieHolder);
 			Axie.transform.DOLocalMove(Vector3.zero, 0.5f);
 			Axie.OnDead += OnAxieDead;
+			Axie.CubeIndex = Index;
 		}
 
 		public void ClearAxie()
