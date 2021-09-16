@@ -13,7 +13,7 @@ namespace Axie
         [SerializeField] private RectTransform rectTransfrom;
         [SerializeField] private float showPosX, hidePosX;
 
-        [SerializeField] private SkeletonGraphic skeletonGraphic;
+        [SerializeField] private SkeletonAnimation skeletonAnim;
         [SerializeField] private TMP_Text teamLabel;
         [SerializeField] private TMP_Text hpLabel;
         [SerializeField] private TMP_Text damageLabel;
@@ -28,8 +28,8 @@ namespace Axie
         {
             if (axie.AxieType != axieType)
             {
-                skeletonGraphic.skeletonDataAsset = axie.AxieProperty.SkeletonDataAsset;
-                skeletonGraphic.Initialize(true);
+                skeletonAnim.skeletonDataAsset = axie.AxieProperty.SkeletonDataAsset;
+                skeletonAnim.Initialize(true);
                 axieType = axie.AxieType;
             }
 
