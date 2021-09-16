@@ -17,9 +17,15 @@ namespace Axie
 
         private IEnumerator Start()
         {
-            yield return mainCamTransform.DOMoveX(0, 5f).WaitForCompletion();
+            AudioController.Instance.StopBGM();
+            AudioController.Instance.PlaySFX(AudioController.SFX.Run);
+            yield return mainCamTransform.DOMoveX(0, 3f).WaitForCompletion();
+            
+            AudioController.Instance.PlaySFX(AudioController.SFX.Ground);
             yield return bigDefender.DOMoveY(-2, 0.5f).WaitForCompletion();
+            
             yield return new WaitForSeconds(1f);
+            AudioController.Instance.PlaySFX(AudioController.SFX.BossLOL);
             foreach (var attacker in attackers)
             {
                 yield return null;
@@ -27,6 +33,7 @@ namespace Axie
                 attacker.transform.DOMoveX(-15, 6f);
             }
             yield return new WaitForSeconds(3f);
+            AudioController.Instance.PlayBGM();
             yield return splash.DOFade(1f, 1f).WaitForCompletion();
             yield return new WaitForSeconds(2f);
             LoadGameScene();

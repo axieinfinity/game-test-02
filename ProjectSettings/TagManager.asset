@@ -41,3 +41,9 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: UI
+    uniqueID: 3302277143
+    locked: 0
+  - name: Effect
+    uniqueID: 3056019589
+    locked: 0

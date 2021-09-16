@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 using DG.Tweening;
-using UnityEditor.Experimental.GraphView;
 
 namespace Axie
 {
@@ -49,7 +48,12 @@ namespace Axie
 
 		public void ClearAxie()
 		{
-			ReturnPool();
+			var sq = DOTween.Sequence();
+			if (Axie != null)
+			{
+				sq.Append(Axie.transform.DOScale(0, 0.3f));
+			}
+			sq.AppendCallback(ReturnPool);
 		}
 
 		private void OnAxieDead()

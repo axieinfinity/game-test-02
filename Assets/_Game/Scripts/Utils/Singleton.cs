@@ -29,6 +29,14 @@ namespace Utils
 			{
 				_instance = GameObject.FindObjectOfType<T>() as T;
 				
+				if (_instance == null) {
+					GameObject obj = Resources.Load(typeof(T).Name) as GameObject;
+					if (obj != null) {
+						GameObject go = GameObject.Instantiate(obj);
+						_instance = go.GetComponent<T>();
+					}
+				}
+				
 				if (_instance == null)
 				{
 					GameObject go = new GameObject("_" + typeof(T).Name);

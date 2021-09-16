@@ -23,7 +23,7 @@ namespace Axie
         {
             var ratio = (float)currentHP / maxHP; 
             scaler.DOScaleX(ratio, 0.3f);
-            hpRenderer.color = ratio > 0.2f ? normalHPColor : lowHPColor;
+            hpRenderer.color = ratio > Constants.GameLogic.LOW_HP ? normalHPColor : lowHPColor;
         }
     }
 }

@@ -1,9 +1,12 @@
 using System;
 using System.Collections;
 using DG.Tweening;
+using Spine.Unity;
 using Spine.Unity.Modules;
 using Spine.Unity.Playables;
+using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using Utils;
 using Random = UnityEngine.Random;
 
@@ -21,8 +24,10 @@ namespace Axie
         [SerializeField] protected AxieProperty property;
         [SerializeField] private HPBar hpBar;
         [SerializeField] private SkeletonAnimationStateHandler animationHandler;
+        [SerializeField] private BoneFollower boneFollower;
         [SerializeField] private Collider2D collider;
         [SerializeField] private SkeletonRendererCustomMaterials customMaterial;
+        [SerializeField] private ParticleSystem explosiveEffect;
         public CubeIndex CubeIndex;
         #endregion
 
@@ -30,7 +35,9 @@ namespace Axie
         
         #region Properties
         public AxieType AxieType => property.AxieType;
+        public int Level { get; set; } = 1;
         public int HP { get; set; }
+        public int MaxHP { get; set; }
         public int TotalDamage { get; set; }
         public int RandomNumber { get; set; }
         public AxieProperty AxieProperty => property;
@@ -39,6 +46,7 @@ namespace Axie
         private void OnEnable()
         {
             HP = property.StartingHP;
+            MaxHP = HP;
             hpBar.Setup(HP);
             RandomNumber = Random.Range(0, 3);
         }
@@ -46,6 +54,7 @@ namespace Axie
         public void SetSkeletonEnable(bool value)
         {
             animationHandler.skeletonAnimation.enabled = value;
+            boneFollower.enabled = value;
         }
 
         public void SetFlip(bool isFacingRight)
@@ -144,6 +153,7 @@ namespace Axie
         bool IsVisible()
         {
             if (mainCam == null) mainCam = Camera.main;
+            if (mainCam.orthographicSize >= 25) return false;
             
             var plans = GeometryUtility.CalculateFrustumPlanes(mainCam);
             return GeometryUtility.TestPlanesAABB(plans, collider.bounds);
@@ -151,11 +161,11 @@ namespace Axie
 
         private void OnMouseDown()
         {
-            // Debug.LogError($"HP: {HP}/{property.StartingHP} - Damage: {Damage}");
-            UIController.Instance.ShowAxieInfo(this);
+            if (EventSystem.current.IsPointerOverGameObject()) return;
+                UIController.Instance.ShowAxieInfo(this);
         }
 
-        public void Update()
+        private void Update()
         {
             SetSkeletonEnable(IsVisible());
         }
@@ -163,6 +173,31 @@ namespace Axie
         public void SetCustomMaterialActive(bool value)
         {
             customMaterial.enabled = value;
+        }
+
+        public void Upgrade()
+        {
+            Level += 1;
+            HP = property.StartingHP * 10;
+            MaxHP = HP;
+            hpBar.Setup(HP);
+            transform.DOScale(2.5f, 0.5f);
+            RandomNumber = Random.Range(0, 3);
+        }
+
+        public void Explosive()
+        {
+            if (explosiveEffect != null)
+            {
+                var effect = Instantiate(explosiveEffect, transform.position, quaternion.identity);
+                effect.transform.localScale *= Level;
+            }
+            TakeDame(HP);
+        }
+
+        public void PlayWinAnim()
+        {
+            animationHandler.PlayAnimationForState($"win{Random.Range(1,4)}", 0, true);
         }
     }
 }

@@ -70,7 +70,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: -1
   m_Sprite: {fileID: 21300000, guid: f782138fe253b45829e15001fd2390c0, type: 3}
   m_Color: {r: 0.3246763, g: 0.8584906, b: 0.31181023, a: 1}
   m_FlipX: 0
@@ -239,10 +239,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3097824966005059876}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.019239902, y: 0.08097997, z: 0}
+  m_LocalPosition: {x: -0.019239962, y: 0.08097997, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1648332830136245642}
+  - {fileID: 5002246993611471555}
   m_Father: {fileID: 703700098935167348}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -337,7 +338,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -2
   m_Sprite: {fileID: 21300000, guid: f782138fe253b45829e15001fd2390c0, type: 3}
   m_Color: {r: 0.18867922, g: 0.18867922, b: 0.18867922, a: 1}
   m_FlipX: 0
@@ -397,7 +398,6 @@ Transform:
   m_Children:
   - {fileID: 1392102295321403637}
   - {fileID: 269971433189709987}
-  - {fileID: 5002246993611471555}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -416,8 +416,14 @@ MonoBehaviour:
   property: {fileID: 11400000, guid: 1df6ac8b9522c4074bcd556c0c007ed2, type: 2}
   hpBar: {fileID: 6772883681723794731}
   animationHandler: {fileID: 7631945253518951210}
+  boneFollower: {fileID: 5262316047747731653}
   collider: {fileID: 5004467829960512869}
   customMaterial: {fileID: 1010087099753054864}
+  explosiveEffect: {fileID: 119483938706713250, guid: 6d56fe9accdc14c59853c65658b50e26, type: 3}
+  CubeIndex:
+    x: 0
+    y: 0
+    z: 0
 --- !u!114 &7631945253518951210
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -444,6 +450,12 @@ MonoBehaviour:
     animation: {fileID: 11400000, guid: ea2f24dfc64424b4695f006e580b8d70, type: 2}
   - stateName: die
     animation: {fileID: 11400000, guid: 008936e38d32d460c85e123be73e3027, type: 2}
+  - stateName: win1
+    animation: {fileID: 11400000, guid: 68509aa0c3a2f4041b38a96cf7015830, type: 2}
+  - stateName: win2
+    animation: {fileID: 11400000, guid: 9d9b6ef9fe47e4f59a7b8626af16e935, type: 2}
+  - stateName: win3
+    animation: {fileID: 11400000, guid: fcd5088cc1d43414a9a0c5570eb55dae, type: 2}
   transitions: []
 --- !u!58 &5004467829960512869
 CircleCollider2D:
@@ -485,12 +497,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7149940258189297423}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.019239962, y: -0.08097997, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 703700098935167348}
-  m_RootOrder: 2
+  m_Father: {fileID: 269971433189709987}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1363309090025817097
 SpriteRenderer:

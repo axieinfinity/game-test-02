@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -91,6 +92,13 @@ namespace Axie
             
             miniCamUIView.mapHeight = mapHeight;
             miniCamUIView.UpdateView();
+        }
+
+        public void EndGameAnim()
+        {
+            cam.transform.DOLocalMove(new Vector3(0, 0, -10), 0.5f);
+            cam.DOOrthoSize(5, 0.5f);
+            this.enabled = false;
         }
     }
 }

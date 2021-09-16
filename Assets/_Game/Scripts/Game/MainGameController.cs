@@ -2,12 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using UnityEngine;
+using Utils;
 using Random = System.Random;
 
 namespace Axie
 {
-    public class MainGameController : MonoBehaviour
+    public class MainGameController : Singleton<MainGameController>
     {
         [SerializeField] private Grid grid;
         [SerializeField] private CameraMovement cameraMovement;
@@ -17,6 +19,8 @@ namespace Axie
         private const float MIN_FPS = 30;
 
         private int radius = 0;
+        private int maxRadius = 0;
+        private int defenderMaxRadius;
         private List<AxieCharacter> attackers = new List<AxieCharacter>();
         private List<AxieCharacter> defenders = new List<AxieCharacter>();
 
@@ -55,6 +59,9 @@ namespace Axie
                 yield return wait;
                 yield return wait;
             }
+
+            maxRadius = radius * 2;
+            defenderMaxRadius = radius;
             
             Debug.LogError($"Total : {attackers.Count + defenders.Count}");
             Debug.LogError($"Total Axies: {grid.Tiles.Count(x => x.Value.IsEmpty == false)}");
@@ -100,7 +107,7 @@ namespace Axie
         private IEnumerator Start()
         {
             yield return new WaitForSeconds(1f);
-            MessageUI.Instance.Show("Generating Largest Map ...", 10);
+            MessageUI.Instance.Show("Generating Largest Map ...", -1);
             yield return new WaitForSeconds(1f);
             yield return InitGrid();
             MessageUI.Instance.Show($"Generate Map Completed! Total Axies: {attackers.Count + defenders.Count}", 5);
@@ -117,7 +124,45 @@ namespace Axie
                 UpdateTiles();
                 yield return wait;
                 powerBar.UpdateBar(attackers, defenders);
+
+                if (CheckEndGame())
+                {
+                    cameraMovement.EndGameAnim();
+                    PlayWinAnim();
+                    yield break;
+                }
             }
+        }
+
+        private void PlayWinAnim()
+        {
+            foreach (var tile in grid.Tiles.Values)
+            {
+                if (tile.IsEmpty == false)
+                {
+                    tile.Axie.PlayWinAnim();
+                }
+            }
+        }
+
+        private bool CheckEndGame()
+        {
+            attackers.RemoveAll(x => x.gameObject.activeSelf == false);
+            defenders.RemoveAll(x => x.gameObject.activeSelf == false);
+            
+            if (attackers.Sum(x => x.HP) <= 0)
+            {
+                UIController.Instance.ShowEndGameUI(AxieType.Defender);
+                return true;
+            }
+            
+            if (defenders.Sum(x => x.HP) <= 0)
+            {
+                UIController.Instance.ShowEndGameUI(AxieType.Attacker);
+                return true;
+            }
+
+            return false;
         }
 
         public void UpdateTiles()
@@ -126,13 +171,17 @@ namespace Axie
             var dictAttackers = new Dictionary<string, Tile>();
             var emptyTiles = new List<Tile>();
             
+            UpdateMaxRadius();
+
             foreach (var tile in grid.Tiles.Values)
             {
+                if (tile.Index.Radius() > maxRadius) continue;
+                
                 if (tile.IsEmpty)
                 {
                     emptyTiles.Add(tile);
                 }
-                else if (tile.AxieType == AxieType.Defender)
+                else if (tile.AxieType == AxieType.Defender && tile.Index.Radius() >= defenderMaxRadius)
                 {
                     var attackerNeighbours = grid.Neighbours(tile)
                         .Where(x => x.IsEmpty == false && x.AxieType == AxieType.Attacker);
@@ -159,6 +208,78 @@ namespace Axie
                     attackerNeighbours[rand].MoveAxieTo(tile);
                 }
             }
+        }
+
+        private void UpdateMaxRadius()
+        {
+            var tileInRadius = grid.TilesInBound(0, 0, 0, maxRadius);
+            bool allEmpty = true;
+            foreach (var tile in tileInRadius)
+            {
+                if (tile.IsEmpty == false)
+                {
+                    allEmpty = false;
+                    break;
+                }
+            }
+
+            if (allEmpty) maxRadius -= 1;
+
+            tileInRadius = grid.TilesInBound(0, 0, 0, defenderMaxRadius);
+            bool allDefender = true;
+            foreach (var tile in tileInRadius)
+            {
+                if (tile.IsEmpty == true || tile.AxieType == AxieType.Attacker)
+                {
+                    allDefender = false;
+                    break;
+                }
+            }
+
+            if (!allDefender) defenderMaxRadius -= 1;
+        }
+        
+        public bool CanMergeAxie(AxieCharacter axie)
+        {
+            if (axie.AxieType == AxieType.Attacker) return false;
+            var neighbours = grid.Neighbours(axie.CubeIndex);
+            foreach (var tile in neighbours)
+            {
+                if (tile.IsEmpty) return false;
+                if (tile.AxieType == AxieType.Attacker) return false;
+            }
+
+            return true;
+        }
+
+        public void MergeAxie(AxieCharacter axie)
+        {
+            if (CanMergeAxie(axie) ==  false) return;
+            var neighbours = grid.Neighbours(axie.CubeIndex);
+            foreach (var tile in neighbours)
+            {
+                tile.Axie.transform.DOMove(axie.transform.position, 0.3f).OnComplete(() =>
+                {
+                    tile.ClearAxie();
+                });
+            }
+            axie.Upgrade();
+            UpdateAttackersAndDefenders();
+        }
+
+        public void ExplosiveAxise(AxieCharacter axie)
+        {
+            if ((float)axie.HP/axie.MaxHP > Constants.GameLogic.LOW_HP) return;
+            
+            var neighbours = grid.TilesInRange(axie.CubeIndex, axie.Level);
+            foreach (var tile in neighbours)
+            {
+                if (tile.IsEmpty == false && tile.AxieType != axie.AxieType)
+                {
+                    tile.Axie.TakeDame(axie.HP * 2);
+                }
+            }
+            axie.Explosive();
         }
     }
 }

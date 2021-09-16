@@ -19,6 +19,9 @@ namespace Axie
             messageLabel.text = message;
             canvasGroup.DOFade(1f, 0.3f);
             rectTransfrom.DOAnchorPosY(showPosY, 0.3f);
+            
+            if (hideDelay < 0) return;
+            
             var sq = DOTween.Sequence();
             sq.AppendInterval(hideDelay);
             sq.AppendCallback(Hide);

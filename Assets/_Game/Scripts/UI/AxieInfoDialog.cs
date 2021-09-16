@@ -3,6 +3,7 @@ using DG.Tweening;
 using Spine.Unity;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Axie
 {
@@ -17,6 +18,8 @@ namespace Axie
         [SerializeField] private TMP_Text hpLabel;
         [SerializeField] private TMP_Text damageLabel;
         [SerializeField] private TMP_Text randomNumberLabel;
+        [SerializeField] private Button buttonMerge;
+        [SerializeField] private Button buttonExplosion;
 
         private AxieType axieType = AxieType.Attacker;
         private AxieCharacter axieCharacter;
@@ -35,6 +38,9 @@ namespace Axie
                 axieCharacter.OnDead -= Hide;
                 axieCharacter.SetCustomMaterialActive(false);
             }
+
+            buttonMerge.gameObject.SetActive(axie.AxieType == AxieType.Defender);
+
             axieCharacter = axie;
             axieCharacter.SetCustomMaterialActive(true);
             
@@ -51,15 +57,49 @@ namespace Axie
             if (axieCharacter != null)
             {
                 teamLabel.text = axieCharacter.AxieType.ToString();
-                hpLabel.text = $"HP: {axieCharacter.HP}/{axieCharacter.AxieProperty.StartingHP}";
+                hpLabel.text = $"HP: {axieCharacter.HP}/{axieCharacter.MaxHP}";
                 damageLabel.text = $"Total Damage: {axieCharacter.TotalDamage}";    
                 randomNumberLabel.text = $"Random Number: {axieCharacter.RandomNumber}";
             }
         }
 
+        public void OnClickMergeAxie()
+        {
+            if (axieCharacter != null)
+                MainGameController.Instance.MergeAxie(axieCharacter);
+        }
+
+        public void OnClickExplosion()
+        {
+            if (CanExplosion())
+            {
+                MainGameController.Instance.ExplosiveAxise(axieCharacter);
+            }
+        }
+
+        bool CanExplosion()
+        {
+            if (axieCharacter != null)
+            {
+                return (float)axieCharacter.HP / axieCharacter.MaxHP <= Constants.GameLogic.LOW_HP;
+            }
+
+            return false;
+        }
+
         private void Update()
         {
             UpdateInfo();
+            if (axieCharacter != null)
+            {
+                buttonMerge.interactable = MainGameController.Instance.CanMergeAxie(axieCharacter);
+            }
+            else
+            {
+                buttonMerge.interactable = false;
+            }
+
+            buttonExplosion.interactable = CanExplosion();
         }
 
         public void Hide()

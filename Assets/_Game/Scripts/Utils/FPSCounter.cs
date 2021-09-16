@@ -33,8 +33,9 @@ public class FPSCounter : Singleton<FPSCounter>
 
     public void CalcFPS ()
     {
-        var deltaTime = times.Min();// times.Sum() / times.Count;
+        var deltaTime = times.Min();// times.Sum() / times.Count; // 
         FPS = 1f / deltaTime;
+        // Debug.LogError(FPS);
         times.Clear();
     }
 }
