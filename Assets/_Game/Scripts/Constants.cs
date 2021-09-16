@@ -11,6 +11,8 @@ namespace Axie
         public class GameLogic
         {
             public const float LOW_HP = 0.35f;
+            public const float TIME_INIT_MAP = 1f;
+            public const float TIME_IN_LOOP = 2f;
         }
     }
 }

@@ -30,7 +30,7 @@ namespace Axie
         {
             grid.Init(1);
             
-            var wait = new WaitForSeconds(0.25f);
+            var wait = new WaitForSeconds(Constants.GameLogic.TIME_INIT_MAP * 0.25f);
             while (FPSCounter.Instance.FPS >= MIN_FPS)
             {
                 yield return wait;
@@ -62,9 +62,6 @@ namespace Axie
 
             maxRadius = radius * 2;
             defenderMaxRadius = radius;
-            
-            Debug.LogError($"Total : {attackers.Count + defenders.Count}");
-            Debug.LogError($"Total Axies: {grid.Tiles.Count(x => x.Value.IsEmpty == false)}");
         }
 
         private void UpdateAttackersAndDefenders()
@@ -110,13 +107,15 @@ namespace Axie
             MessageUI.Instance.Show("Generating Largest Map ...", -1);
             yield return new WaitForSeconds(1f);
             yield return InitGrid();
+            UpdateAttackersAndDefenders();
+            Debug.LogError($"Total Axies: {grid.Tiles.Count(x => x.Value.IsEmpty == false)}");
             MessageUI.Instance.Show($"Generate Map Completed! Total Axies: {attackers.Count + defenders.Count}", 5);
             yield return GameLoop();
         }
 
         IEnumerator GameLoop()
         {
-            var wait = new WaitForSeconds(1f);
+            var wait = new WaitForSeconds(Constants.GameLogic.TIME_IN_LOOP * 0.5f);
             
             while (true)
             {

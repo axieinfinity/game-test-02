@@ -5,6 +5,7 @@ using DG.Tweening;
 using Spine.Unity;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random;
 
 namespace Axie
 {
@@ -17,6 +18,7 @@ namespace Axie
 
         private IEnumerator Start()
         {
+            Random.InitState((int)DateTime.Now.Ticks);
             AudioController.Instance.StopBGM();
             AudioController.Instance.PlaySFX(AudioController.SFX.Run);
             yield return mainCamTransform.DOMoveX(0, 3f).WaitForCompletion();
